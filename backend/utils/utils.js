@@ -1,5 +1,6 @@
 const chalk = require("chalk")
 const trades = require('../schema/trades-schema');
+const objectId = require('mongoose').mongo.ObjectID;
 
 var validateTradeData = function (data) {
     if (data.action < 0 || data.action > 1) {
@@ -21,7 +22,7 @@ var validateTradeData = function (data) {
     return true;
 }
 
-var updateAvgBuyPrice = function (currentNoOfShares, currentAvgBuyPrice, data) {
+var updateAvgBuyPrice = function (currentNoOfShares, data) {
 
     // If selling, update only noOfShares
     if (data.action === 0) {
@@ -41,32 +42,84 @@ var updateAvgBuyPrice = function (currentNoOfShares, currentAvgBuyPrice, data) {
         // set them directly
         if (currentNoOfShares === 0) {
             currentNoOfShares = data.quantity;
-            currentAvgBuyPrice = data.price;
         }
 
         // Else we should calculate weighted average for AvgBuyPrice.
         else {
-            currentAvgBuyPrice = ((currentAvgBuyPrice * currentNoOfShares) + (data.price * data.quantity)) / (currentNoOfShares + data.quantity);
             currentNoOfShares = currentNoOfShares + data.quantity;
         }
     }
 
     var updates = {
         newNoOfShares: currentNoOfShares,
-        newAvgBuyPrice: currentAvgBuyPrice
     }
 
     return updates;
 }
 
-var calculateReturns = function(data)
-{
+var calculateReturns = function (data) {
     var currentPrice = 100;
-    return (currentPrice - data.avgBuyPrice) * (data.noOfShares) 
+    return (currentPrice - data.avgBuyPrice) * (data.noOfShares)
+}
+
+// update = 1 => update
+// update = 0 => delete
+var deleteOrUpdateTrade = function (security, data, update = 1) {
+    var currentNoOfShares = security.noOfShares;
+    var sharesToBeUpdated = 0;
+    var action = -1;
+    var originalQuantity = 0;
+    security.trades.forEach((trade) => {
+        if ((trade._id).equals(data.tradeId)) {
+            sharesToBeUpdated = trade.quantity;
+            action = trade.action;
+            originalQuantity = trade.quantity;
+            return;
+        }
+    });
+
+    if (update === 0) {
+        // share were bought, and now deleted
+        if (action === 1)
+            currentNoOfShares -= sharesToBeUpdated;
+
+        else if (action === 0)
+            currentNoOfShares += sharesToBeUpdated;
+    }
+
+    else {
+
+        // original action was sell
+        if(action === 0)
+        {
+            if(data.action === 0)
+                currentNoOfShares = currentNoOfShares + originalQuantity - data.quantity;
+            
+            else
+                currentNoOfShares = currentNoOfShares + originalQuantity + data.quantity;
+        }
+
+        else
+        {
+            if(data.action === 0)
+                currentNoOfShares = currentNoOfShares - data.quantity - originalQuantity;
+            
+            else
+                currentNoOfShares = currentNoOfShares + data.quantity - originalQuantity;
+        }
+    }
+
+    if (sharesToBeUpdated === 0) {
+        console.log(chalk.yellow("No trade was found"));
+        return null;
+    }
+    console.log(currentNoOfShares);
+    return currentNoOfShares;
 }
 
 module.exports = {
     validateTradeData: validateTradeData,
     updateAvgBuyPrice: updateAvgBuyPrice,
-    calculateReturns : calculateReturns
+    calculateReturns: calculateReturns,
+    deleteOrUpdateTrade: deleteOrUpdateTrade,
 }

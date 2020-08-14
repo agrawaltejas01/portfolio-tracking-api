@@ -47,6 +47,11 @@ const tradeSchema = new Schema(
                         throw new Error("Price of trade cannot be less than or equal to 0");
                 }
             },
+
+            timeStamp : {
+                type : Date,
+                default : new Date(),
+            }
         }]
     },
 

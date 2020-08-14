@@ -21,12 +21,11 @@ router.route("/fetchHoldings").get((req, res) => {
 
             trades.forEach((trade) => {
 
-                
 
                 var currentSecurity = {
-                ticker : trade._id,
-                averageBuyPrice : calculateAvgBuyPrice(trade),
-                shares : trade.noOfShares
+                    ticker: trade._id,
+                    averageBuyPrice: calculateAvgBuyPrice(trade.trades),
+                    shares: trade.noOfShares
                 }
 
                 securities.push(currentSecurity);
@@ -48,7 +47,7 @@ router.route("/fetchReturns").get((req, res) => {
             })
 
             res.json({
-                totalReturn : totalReturn
+                totalReturn: totalReturn
             });
         }).catch((err) => console.log(chalk.red("Error in portfolio/fetchHoldings : " + err)));
 });

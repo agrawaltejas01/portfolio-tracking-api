@@ -22,7 +22,7 @@ var validateTradeData = function (data) {
     return true;
 }
 
-var updateAvgBuyPrice = function (currentNoOfShares, data) {
+var validateUpdateNoOfShares = function (currentNoOfShares, data) {
 
     // If selling, update only noOfShares
     if (data.action === 0) {
@@ -55,11 +55,6 @@ var updateAvgBuyPrice = function (currentNoOfShares, data) {
     }
 
     return updates;
-}
-
-var calculateReturns = function (data) {
-    var currentPrice = 100;
-    return (currentPrice - data.avgBuyPrice) * (data.noOfShares)
 }
 
 // update = 1 => update
@@ -119,7 +114,6 @@ var deleteOrUpdateTrade = function (security, data, update = 1) {
 
 module.exports = {
     validateTradeData: validateTradeData,
-    updateAvgBuyPrice: updateAvgBuyPrice,
-    calculateReturns: calculateReturns,
+    validateUpdateNoOfShares: validateUpdateNoOfShares,
     deleteOrUpdateTrade: deleteOrUpdateTrade,
 }

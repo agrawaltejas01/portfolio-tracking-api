@@ -1,0 +1,2 @@
+1. Time stamp stored in trade for calculation of avgByPrice
+2. noOfShares stores for validation purpose, a trade should not be added when there are less number of shares.

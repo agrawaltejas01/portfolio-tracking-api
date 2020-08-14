@@ -3,7 +3,8 @@ const trades = require('../schema/trades-schema');
 const chalk = require('chalk');
 const ObjectId = require('mongodb').ObjectID;
 
-var calculateReturns = require("../utils/utils").calculateReturns;
+var calculateReturns = require("../utils/portfolio-utils").calculateReturns;
+var calculateAvgBuyPrice = require("../utils/portfolio-utils").calculateAvgBuyPrice
 
 router.route("/fetchPortFolios").get((req, res) => {
     trades.find()
@@ -19,9 +20,12 @@ router.route("/fetchHoldings").get((req, res) => {
             var securities = [];
 
             trades.forEach((trade) => {
+
+                
+
                 var currentSecurity = {
                 ticker : trade._id,
-                averageBuyPrice : trade.avgBuyPrice,
+                averageBuyPrice : calculateAvgBuyPrice(trade),
                 shares : trade.noOfShares
                 }
 

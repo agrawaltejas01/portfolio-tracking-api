@@ -1,0 +1,14 @@
+1. /addTrade
+
+    Input type: JSON
+    Input params : {
+        ticker :  String ("ticker of the security"),
+        action : 0(sell) / 1(buy),
+        quantity :  Number (# of shares bought or sold),
+        price : Number (price of shares. Not necessary when action is sell) 
+    }
+
+    Output : {
+        "Error msg with 400 header if validations fail",
+        "Success msg otherwise"
+    }

@@ -54,4 +54,4 @@ app.use(function (req, res, next) {
 app.use('/trade', tradeRouter);
 app.use('/portfolio', portFolioRouter);
 
-app.listen(port, () => console.log(chalk.green("API is running on 8080")));
+app.listen(port, () => console.log(chalk.green("API is running on " + port)));

@@ -1,55 +1,66 @@
 const router = require('express').Router();
 const trades = require('../schema/trades-schema');
 const chalk = require('chalk');
-const ObjectId = require('mongodb').ObjectID;
 
 var calculateReturns = require("../utils/portfolio-utils").calculateReturns;
 var calculateAvgBuyPrice = require("../utils/portfolio-utils").calculateAvgBuyPrice
 
-router.route("/fetchPortFolios").get((req, res) => {
-    trades.find()
-        .then((trades) => {
-            res.json(trades);
-        }).catch((err) => console.log(chalk.red("Error in portfolio/fetchPortFolios : " + err)));
+router.route("/fetchPortFolios").get(async (req, res) => {
+
+    try {
+        const securityAndtrades = await trades.find();
+        res.status(200).json(securityAndtrades);
+    }
+    catch (error) {
+        console.log(chalk.red("Error in portfolio/fetchPortFolios : " + error));
+        res.status(400).send("Error : " + error);
+    }
 });
 
-router.route("/fetchHoldings").get((req, res) => {
-    trades.find()
-        .then((trades) => {
+router.route("/fetchHoldings").get(async (req, res) => {
 
-            var securities = [];
+    try {
+        const securityAndtrades = await trades.find();
 
-            trades.forEach((trade) => {
+        var securities = [];
+        securityAndtrades.forEach((security) => {
 
+            var currentSecurity = {
+                ticker: security._id,
+                averageBuyPrice: calculateAvgBuyPrice(security.trades),
+                shares: security.noOfShares
+            }
 
-                var currentSecurity = {
-                    ticker: trade._id,
-                    averageBuyPrice: calculateAvgBuyPrice(trade.trades),
-                    shares: trade.noOfShares
-                }
+            securities.push(currentSecurity);
+        })
 
-                securities.push(currentSecurity);
-            })
-
-            res.json(securities);
-        }).catch((err) => console.log(chalk.red("Error in portfolio/fetchHoldings : " + err)));
+        res.json(securities);
+    }
+    catch (error) {
+        console.log(chalk.red("Error in portfolio/fetchHoldings : " + error))
+        res.status(400).send("Error : " + error);
+    }
 });
 
-router.route("/fetchReturns").get((req, res) => {
-    trades.find()
-        .then((trades) => {
+router.route("/fetchReturns").get(async (req, res) => {
 
+    try {
+        const securityAndtrades = await trades.find();
 
-            var totalReturn = 0;
+        var totalReturn = 0;
+        securityAndtrades.forEach((security) => {
 
-            trades.forEach((trade) => {
-                totalReturn += calculateReturns(trade);
-            })
+            totalReturn += calculateReturns(security);
+        })
 
-            res.json({
-                totalReturn: totalReturn
-            });
-        }).catch((err) => console.log(chalk.red("Error in portfolio/fetchHoldings : " + err)));
+        res.json({
+            totalReturn: totalReturn
+        });
+    }
+    catch (error) {
+        console.log(chalk.red("Error in portfolio/fetchReturns : " + error))
+        res.status(400).send("Error : " + error);
+    }
 });
 
 module.exports = router;

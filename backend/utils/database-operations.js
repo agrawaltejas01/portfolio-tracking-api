@@ -39,6 +39,7 @@ var updateSecurityTrades = function(req, res, updates) {
         res.send("New Trade was successfully added in security : " + req.body.ticker);
     }).catch((err) => {
         console.log(chalk.red("Error in adding trade(/addTrade) for Error : " + err));
+        res.status(400).send("Error in calling in /addTrade : " + err);
     });
 
 }

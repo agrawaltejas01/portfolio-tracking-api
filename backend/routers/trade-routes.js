@@ -10,103 +10,114 @@ var updateSecurityTrades = require('../utils/database-operations').updateSecurit
 var updateTrade = require('../utils/database-operations').updateTrade;
 var deleteTrade = require('../utils/database-operations').deleteTrade;
 
-router.route("/addTrade").post((req, res) => {
+router.route("/addTrade").post(async (req, res) => {
 
-    if (!validateTradeData(req.body)) {
-        console.log(chalk.red("Error in /addTrade"));
-        res.status(400).send("Error in data validations");
-        return;
-    }
 
-    getSecurityByID(req.body.ticker).then((security) => {
+    try {
+        if (!validateTradeData(req.body)) {
+            throw "Error in data validation"
+        }
+        const security = await getSecurityByID(req.body.ticker);
 
+        // If security exists, get value of noOfShares
         if (security) {
             var currentNoOfShares = security.noOfShares;
         }
 
+        // Else we will have to create new security
+        // Initialize value of currentNoOfShares to 0
         else {
             var currentNoOfShares = 0;
         }
 
+        // Validate and update noOfShares
         updates = validateUpdateNoOfShares(currentNoOfShares, req.body);
 
         if (updates === null) {
-            console.log(chalk.red("Cannot sell more shares than we own right now"));
-            res.status(400).send("Cannot sell more shares than we own right now");
-            return;
+            throw "Cannot sell more shares than we own right now"
         }
 
+        // Do the update operation in database
         updateSecurityTrades(req, res, updates);
 
-    }).catch((err) => {
-        console.log("Error in calling getSecurityByID " + err);
-    });
+
+    }
+    catch (error) {
+        console.log(chalk.red("Error in calling /addTrade : " + error));
+        res.status(400).send("Error in calling in /addTrade : " + error);
+    }
 
 
 });
 
 
 
-router.route("/updateTrade").patch((req, res) => {
+router.route("/updateTrade").patch(async (req, res) => {
 
-    getSecurityByID(req.body.ticker).then((security) => {
+    try {
+
+        if (!validateTradeData(req.body)) {
+            throw "Error in data validation"
+        }
+
+        const security = await getSecurityByID(req.body.ticker);
 
         // ticker does not exist
         if (security === null) {
-            res.send("No share was found");
-            return;
+            throw "No share was found (Perhaps wrong ticker)";
         }
 
-        if (!validateTradeData(req.body)) {
-            console.log(chalk.red("Error in /updateTrade"));
-            res.status(400).send("Error in data validations");
-            return;
-        }
-
+        // Get new value of noOfShares
         newNoOfShares = deleteOrUpdateTrade(security, req.body, 1)
 
+        // Warn user about the action
         if (newNoOfShares < 0)
             console.log(chalk.yellow.bold("total number of shares after deleting this trade will be negative"));
 
         // No trade with given tradeID was found
         if (newNoOfShares === null) {
-            res.send("No share was found");
-            return;
+            throw "No share was found (Perhaps Wrong tradeId)"
         }
 
         updateTrade(req, res, newNoOfShares);
-    }).catch((err) => {
-        console.log("Error in calling getSecurityByID " + err);
-    });
 
+    }
+    catch (error) {
+        console.log(chalk.red("Error in calling /updateTrade : " + error));
+        res.status(400).send("Error in calling in /updateTrade : " + error);
+    }
 
 });
 
-router.route("/deleteTrade").delete((req, res) => {
+router.route("/deleteTrade").delete(async (req, res) => {
 
-    getSecurityByID(req.body.ticker).then((security) => {
+    try {
+
+        const security = await getSecurityByID(req.body.ticker);
 
         // ticker does not exist
         if (security === null) {
-            res.send("No share was found");
-            return;
+            throw "No share was found (Perhaps wrong ticker)";
         }
 
+        // Get new value of noOfShares
         newNoOfShares = deleteOrUpdateTrade(security, req.body, 0)
 
+        // Warn user about the action
         if (newNoOfShares < 0)
             console.log(chalk.yellow.bold("total number of shares after deleting this trade will be negative"));
 
         // No trade with given tradeID was found
         if (newNoOfShares === null) {
-            res.send("No share was found");
-            return;
+            throw "No share was found (Perhaps Wrong tradeId)"
         }
 
         deleteTrade(req, res, newNoOfShares);
-    }).catch((err) => {
-        console.log("Error in calling getSecurityByID " + err);
-    });
+    }
+    catch (error) {
+        console.log(chalk.red("Error in calling /deleteTrade : " + error));
+        res.status(400).send("Error in calling in /deleteTrade : " + error);
+    }
 })
 
 module.exports = router;

@@ -42,6 +42,7 @@ const tradeSchema = new Schema(
             
             price: {
                 type: Number,
+                required: true,
                 validate(value) {
                     if (value <= 0)
                         throw new Error("Price of trade cannot be less than or equal to 0");

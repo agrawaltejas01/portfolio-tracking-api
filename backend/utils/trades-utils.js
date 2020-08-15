@@ -3,6 +3,29 @@ const trades = require('../schema/trades-schema');
 const objectId = require('mongoose').mongo.ObjectID;
 
 var validateTradeData = function (data) {
+
+    // Check that all necessesary keys are present
+
+    if (!data.hasOwnProperty('ticker')) {
+        console.log(chalk.red("No ticker provided in request"));
+        return false;
+    }
+
+    if (!data.hasOwnProperty('price')) {
+        console.log(chalk.red("No price provided in request"));
+        return false;
+    }
+
+    if (!data.hasOwnProperty('quantity')) {
+        console.log(chalk.red("No quantity provided in request"));
+        return false;
+    }
+
+    if (!data.hasOwnProperty('action')) {
+        console.log(chalk.red("No action provided in request"));
+        return false;
+    }
+
     if (data.action < 0 || data.action > 1) {
         console.log(chalk.red("Action of trade can only be 0 or 1"));
         return false;
@@ -85,20 +108,18 @@ var deleteOrUpdateTrade = function (security, data, update = 1) {
     else {
 
         // original action was sell
-        if(action === 0)
-        {
-            if(data.action === 0)
+        if (action === 0) {
+            if (data.action === 0)
                 currentNoOfShares = currentNoOfShares + originalQuantity - data.quantity;
-            
+
             else
                 currentNoOfShares = currentNoOfShares + originalQuantity + data.quantity;
         }
 
-        else
-        {
-            if(data.action === 0)
+        else {
+            if (data.action === 0)
                 currentNoOfShares = currentNoOfShares - data.quantity - originalQuantity;
-            
+
             else
                 currentNoOfShares = currentNoOfShares + data.quantity - originalQuantity;
         }

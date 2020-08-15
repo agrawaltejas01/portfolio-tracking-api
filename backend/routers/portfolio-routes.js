@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const trades = require('../schema/trades-schema');
 const chalk = require('chalk');
 
 var getAllSecurities = require("../utils/database-operations").getAllSecurities;

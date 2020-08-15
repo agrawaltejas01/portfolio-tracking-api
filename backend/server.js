@@ -8,7 +8,7 @@ const tradeRouter = require('./routers/trade-routes');
 const portFolioRouter = require('./routers/portfolio-routes');
 
 const app = express();
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 8000;
 
 // used so that we can directly use req.body
 // Otherwise we have to use JSON.parse() and all those things

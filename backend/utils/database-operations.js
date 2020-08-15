@@ -2,12 +2,24 @@ const trades = require('../schema/trades-schema');
 const ObjectId = require('mongodb').ObjectID;
 const chalk = require('chalk');
 
-var getSecurityByID = async function (id) {
+var getAllSecurities = async () => {
+    try {
+        var securities = await trades.find();
+        return securities;
+    }
+    catch (error) {
+        console.log(chalk.red("Error in getAllSecurities : " + error));
+        res.status(400).send("Error in getAllSecurities : " + error);
+    }
+}
+
+var getSecurityByID = async (id) => {
 
     try {
         var security = await trades.findById(id);
         return security;
-    } catch (error) {
+    }
+    catch (error) {
         console.log(chalk.red("Error in getSecurityByID : " + error));
         res.status(400).send("Error in getSecurityByID : " + error);
     }
@@ -115,5 +127,5 @@ module.exports = {
     updateSecurityTrades: updateSecurityTrades,
     updateTrade: updateTrade,
     deleteTrade: deleteTrade,
-
+    getAllSecurities : getAllSecurities,
 }

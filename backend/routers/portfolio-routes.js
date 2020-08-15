@@ -2,13 +2,17 @@ const router = require('express').Router();
 const trades = require('../schema/trades-schema');
 const chalk = require('chalk');
 
+var getAllSecurities = require("../utils/database-operations").getAllSecurities;
+
 var calculateReturns = require("../utils/portfolio-utils").calculateReturns;
-var calculateAvgBuyPrice = require("../utils/portfolio-utils").calculateAvgBuyPrice
+var calculateAvgBuyPrice = require("../utils/portfolio-utils").calculateAvgBuyPrice;
 
 router.route("/fetchPortFolios").get(async (req, res) => {
 
     try {
-        const securityAndtrades = await trades.find();
+        const securityAndtrades = await getAllSecurities();
+
+        console.log(securityAndtrades);
         res.status(200).json(securityAndtrades);
     }
     catch (error) {
@@ -20,7 +24,7 @@ router.route("/fetchPortFolios").get(async (req, res) => {
 router.route("/fetchHoldings").get(async (req, res) => {
 
     try {
-        const securityAndtrades = await trades.find();
+        const securityAndtrades = await getAllSecurities();
 
         var securities = [];
         securityAndtrades.forEach((security) => {
@@ -34,7 +38,7 @@ router.route("/fetchHoldings").get(async (req, res) => {
             securities.push(currentSecurity);
         })
 
-        res.json(securities);
+        res.status(200).json(securities);
     }
     catch (error) {
         console.log(chalk.red("Error in portfolio/fetchHoldings : " + error))
@@ -45,7 +49,7 @@ router.route("/fetchHoldings").get(async (req, res) => {
 router.route("/fetchReturns").get(async (req, res) => {
 
     try {
-        const securityAndtrades = await trades.find();
+        const securityAndtrades = await getAllSecurities();
 
         var totalReturn = 0;
         securityAndtrades.forEach((security) => {
@@ -53,7 +57,7 @@ router.route("/fetchReturns").get(async (req, res) => {
             totalReturn += calculateReturns(security);
         })
 
-        res.json({
+        res.status(200).json({
             totalReturn: totalReturn
         });
     }

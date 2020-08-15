@@ -1,30 +1,12 @@
 const chalk = require("chalk")
-const trades = require('../schema/trades-schema');
-const objectId = require('mongoose').mongo.ObjectID;
+
+var errorBody = function (message, status = 400)
+{
+    this.message = message;
+    this.status = status;
+}
 
 var validateTradeData = function (data) {
-
-    // Check that all necessesary keys are present
-
-    if (!data.hasOwnProperty('ticker')) {
-        console.log(chalk.red("No ticker provided in request"));
-        return false;
-    }
-
-    if (!data.hasOwnProperty('price')) {
-        console.log(chalk.red("No price provided in request"));
-        return false;
-    }
-
-    if (!data.hasOwnProperty('quantity')) {
-        console.log(chalk.red("No quantity provided in request"));
-        return false;
-    }
-
-    if (!data.hasOwnProperty('action')) {
-        console.log(chalk.red("No action provided in request"));
-        return false;
-    }
 
     if (data.action < 0 || data.action > 1) {
         console.log(chalk.red("Action of trade can only be 0 or 1"));
@@ -37,7 +19,7 @@ var validateTradeData = function (data) {
     }
 
     // check price only if action is 1 => (buy)
-    if (data.action === 1 && data.price <= 0) {
+    if (data.price <= 0) {
         console.log(chalk.red("Price of trade should be greater than 0"));
         return false;
     }
@@ -134,6 +116,7 @@ var deleteOrUpdateTrade = function (security, data, update = 1) {
 }
 
 module.exports = {
+    errorBody : errorBody,
     validateTradeData: validateTradeData,
     validateUpdateNoOfShares: validateUpdateNoOfShares,
     deleteOrUpdateTrade: deleteOrUpdateTrade,

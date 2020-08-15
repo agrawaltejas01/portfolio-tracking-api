@@ -1,23 +1,25 @@
 const router = require('express').Router();
 const chalk = require('chalk');
 
-var validateTradeData = require("../utils/trades-utils").validateTradeData;
-var validateUpdateNoOfShares = require("../utils/trades-utils").validateUpdateNoOfShares;
-var deleteOrUpdateTrade = require("../utils/trades-utils").deleteOrUpdateTrade;
+var requestBodyValidator = require("../utils/request-body-validations");
+var utils = require("../utils/trades-utils");
+var database = require('../utils/database-operations');
 
-var getSecurityByID = require('../utils/database-operations').getSecurityByID;
-var updateSecurityTrades = require('../utils/database-operations').updateSecurityTrades;
-var updateTrade = require('../utils/database-operations').updateTrade;
-var deleteTrade = require('../utils/database-operations').deleteTrade;
 
 router.route("/addTrade").post(async (req, res) => {
 
 
     try {
-        if (!validateTradeData(req.body)) {
-            throw "Error in data validation"
+
+        // Validate Request Body
+        if (!requestBodyValidator.addTradeReqBody(req.body)) {
+            throw new utils.errorBody("Invalid Body recieved", 404);
         }
-        const security = await getSecurityByID(req.body.ticker);
+
+        if (!utils.validateTradeData(req.body)) {
+            throw new utils.errorBody("Error in data validation");
+        }
+        const security = await database.getSecurityByID(req.body.ticker);
 
         // If security exists, get value of noOfShares
         if (security) {
@@ -31,20 +33,20 @@ router.route("/addTrade").post(async (req, res) => {
         }
 
         // Validate and update noOfShares
-        updates = validateUpdateNoOfShares(currentNoOfShares, req.body);
+        updates = utils.validateUpdateNoOfShares(currentNoOfShares, req.body);
 
         if (updates === null) {
             throw "Cannot sell more shares than we own right now"
         }
 
         // Do the update operation in database
-        updateSecurityTrades(req, res, updates);
+        database.updateSecurityTrades(req, res, updates);
 
 
     }
     catch (error) {
-        console.log(chalk.red("Error in calling /addTrade : " + error));
-        res.status(400).send("Error in calling in /addTrade : " + error);
+        console.log(chalk.red("Error in calling /addTrade : " + error.message));
+        res.status(error.status).send("Error in calling in /addTrade : " + error.message);
     }
 
 
@@ -56,19 +58,25 @@ router.route("/updateTrade").patch(async (req, res) => {
 
     try {
 
-        if (!validateTradeData(req.body)) {
-            throw "Error in data validation"
+        // Validate Request Body
+        if (!requestBodyValidator.updateTradeReqBody(req.body)) {
+            throw new utils.errorBody("Invalid Body recieved", 404);
         }
 
-        const security = await getSecurityByID(req.body.ticker);
+        if (!utils.validateTradeData(req.body)) {
+            throw new utils.errorBody("Error in data validation");
+
+        }
+
+        const security = await database.getSecurityByID(req.body.ticker);
 
         // ticker does not exist
         if (security === null) {
-            throw "No share was found (Perhaps wrong ticker)";
+            throw new utils.errorBody("No share was found (Perhaps wrong ticker)");
         }
 
         // Get new value of noOfShares
-        newNoOfShares = deleteOrUpdateTrade(security, req.body, 1)
+        newNoOfShares = utils.deleteOrUpdateTrade(security, req.body, 1)
 
         // Warn user about the action
         if (newNoOfShares < 0)
@@ -76,15 +84,15 @@ router.route("/updateTrade").patch(async (req, res) => {
 
         // No trade with given tradeID was found
         if (newNoOfShares === null) {
-            throw "No share was found (Perhaps Wrong tradeId)"
+            throw new utils.errorBody("No share was found (Perhaps Wrong tradeId)");
         }
 
-        updateTrade(req, res, newNoOfShares);
+        database.updateTrade(req, res, newNoOfShares);
 
     }
     catch (error) {
-        console.log(chalk.red("Error in calling /updateTrade : " + error));
-        res.status(400).send("Error in calling in /updateTrade : " + error);
+        console.log(chalk.red("Error in calling /updateTrade : " + error.message));
+        res.status(error.status).send("Error in calling in /updateTrade : " + error.message);
     }
 
 });
@@ -92,16 +100,20 @@ router.route("/updateTrade").patch(async (req, res) => {
 router.route("/deleteTrade").delete(async (req, res) => {
 
     try {
+        // Delete Request Body
+        if (!requestBodyValidator.deleteTradeReqBody(req.body)) {
+            throw new utils.errorBody("Invalid Body recieved", 404);
+        }
 
-        const security = await getSecurityByID(req.body.ticker);
+        const security = await database.getSecurityByID(req.body.ticker);
 
         // ticker does not exist
         if (security === null) {
-            throw "No share was found (Perhaps wrong ticker)";
+            throw new utils.errorBody("No share was found (Perhaps wrong ticker)");
         }
 
         // Get new value of noOfShares
-        newNoOfShares = deleteOrUpdateTrade(security, req.body, 0)
+        newNoOfShares = utils.deleteOrUpdateTrade(security, req.body, 0)
 
         // Warn user about the action
         if (newNoOfShares < 0)
@@ -109,14 +121,14 @@ router.route("/deleteTrade").delete(async (req, res) => {
 
         // No trade with given tradeID was found
         if (newNoOfShares === null) {
-            throw "No share was found (Perhaps Wrong tradeId)"
+            throw new utils.errorBody("No share was found (Perhaps Wrong tradeId)");
         }
 
-        deleteTrade(req, res, newNoOfShares);
+        database.deleteTrade(req, res, newNoOfShares);
     }
     catch (error) {
-        console.log(chalk.red("Error in calling /deleteTrade : " + error));
-        res.status(400).send("Error in calling in /deleteTrade : " + error);
+        console.log(chalk.red("Error in calling /deleteTrade : " + error.message));
+        res.status(error.status).send("Error in calling in /deleteTrade : " + error.message);
     }
 })
 

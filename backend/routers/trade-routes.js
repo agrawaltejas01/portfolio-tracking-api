@@ -5,16 +5,16 @@ var validateTradeData = require("../utils/trades-utils").validateTradeData;
 var validateUpdateNoOfShares = require("../utils/trades-utils").validateUpdateNoOfShares;
 var deleteOrUpdateTrade = require("../utils/trades-utils").deleteOrUpdateTrade;
 
-var getSecurityByID = require('./database-operations').getSecurityByID;
-var updateSecurityTrades = require('./database-operations').updateSecurityTrades;
-var updateTrade = require('./database-operations').updateTrade;
-var deleteTrade = require('./database-operations').deleteTrade;
+var getSecurityByID = require('../utils/database-operations').getSecurityByID;
+var updateSecurityTrades = require('../utils/database-operations').updateSecurityTrades;
+var updateTrade = require('../utils/database-operations').updateTrade;
+var deleteTrade = require('../utils/database-operations').deleteTrade;
 
 router.route("/addTrade").post((req, res) => {
 
     if (!validateTradeData(req.body)) {
         console.log(chalk.red("Error in /addTrade"));
-        res.header(400).send("Error in data validations");
+        res.status(400).send("Error in data validations");
         return;
     }
 
@@ -32,7 +32,7 @@ router.route("/addTrade").post((req, res) => {
 
         if (updates === null) {
             console.log(chalk.red("Cannot sell more shares than we own right now"));
-            res.header(400).send("Cannot sell more shares than we own right now");
+            res.status(400).send("Cannot sell more shares than we own right now");
             return;
         }
 
@@ -59,7 +59,7 @@ router.route("/updateTrade").patch((req, res) => {
 
         if (!validateTradeData(req.body)) {
             console.log(chalk.red("Error in /updateTrade"));
-            res.header(400).send("Error in data validations");
+            res.status(400).send("Error in data validations");
             return;
         }
 

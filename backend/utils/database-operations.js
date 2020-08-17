@@ -27,11 +27,20 @@ var getSecurityByID = async (id) => {
 };
 
 var getSecurityByTradeID = async (tradeId) => {
-    
+
     try {
         var security = await trades.findOne(
             {
                 "trades._id": new ObjectId(tradeId)
+            },
+
+            {
+                trades: {
+                    $elemMatch: {
+                        _id: new ObjectId(tradeId)
+                    }
+                },
+                noOfShares: 1
             }
         );
 
@@ -74,7 +83,7 @@ var upsertSecurityTrades = async (req, res, updates) => {
                 upsert: true
             }
         );
-        
+
         console.log(chalk.green("Successful request to add new trades (post /trades/)"));
         console.log(req.body);
         res.send("New Trade was successfully added in security : " + req.body.ticker);
@@ -105,7 +114,7 @@ var updateTrade = async (req, res, newNoOfShares) => {
                 }
             },
         )
-        
+
         console.log(chalk.green("Successful request to update trades (patch /trades/)"));
         console.log(req.body);
         res.send("Trade was successfully updated for ticker " + req.body.tradeId);
@@ -121,7 +130,7 @@ var deleteTrade = async (req, res, newNoOfShares) => {
     try {
         await trades.updateOne(
             {
-                _id: req.body.ticker
+                "trades._id": req.body.tradeId
             },
 
             {
@@ -150,9 +159,9 @@ var deleteTrade = async (req, res, newNoOfShares) => {
 
 module.exports = {
     getSecurityByID: getSecurityByID,
-    getSecurityByTradeID : getSecurityByTradeID,
+    getSecurityByTradeID: getSecurityByTradeID,
     upsertSecurityTrades: upsertSecurityTrades,
     updateTrade: updateTrade,
     deleteTrade: deleteTrade,
-    getAllSecurities : getAllSecurities,
+    getAllSecurities: getAllSecurities,
 };

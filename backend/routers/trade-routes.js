@@ -18,17 +18,21 @@ router.route("/addTrade").post(async (req, res) => {
 
         const security = await database.getSecurityByID(req.body.ticker);
 
+        console.log("Security recieved from getSecurityByID");
+        console.log(security);
         // If security exists, get value of noOfShares
         if (security) {
             var currentNoOfShares = security.noOfShares;
         }
-
+        
         // Else we will have to create new security
         // Initialize value of currentNoOfShares to 0
         else {
             var currentNoOfShares = 0;
         }
 
+        console.log("noOfShares recieved from getSecurityByID");
+        console.log(currentNoOfShares);
         // Validate and update noOfShares
         updates = utils.validateUpdateNoOfShares(currentNoOfShares, req.body);
 
@@ -69,7 +73,7 @@ router.route("/updateTrade").patch(async (req, res) => {
         }
 
         // Get new value of noOfShares
-        newNoOfShares = utils.deleteOrUpdateTrade(security, req.body, 1)
+        newNoOfShares = utils.updateTrade(security, req.body)
 
         // Warn user about the action
         if (newNoOfShares < 0)
@@ -107,7 +111,7 @@ router.route("/deleteTrade").delete(async (req, res) => {
         }
 
         // Get new value of noOfShares
-        newNoOfShares = utils.deleteOrUpdateTrade(security, req.body, 0)
+        newNoOfShares = utils.deleteTrade(security)
 
         // Warn user about the action
         if (newNoOfShares < 0)

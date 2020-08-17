@@ -1,7 +1,6 @@
 const chalk = require("chalk")
 
-var errorBody = function (message, status = 400)
-{
+var errorBody = function (message, status = 400) {
     this.message = message;
     this.status = status;
 }
@@ -43,59 +42,62 @@ var validateUpdateNoOfShares = function (currentNoOfShares, data) {
 
 // update = 1 => update
 // update = 0 => delete
-var deleteOrUpdateTrade = function (security, data, update = 1) {
+
+var deleteTrade = (security) => {
+
     var currentNoOfShares = security.noOfShares;
-    var sharesToBeUpdated = 0;
-    var action = -1;
-    var originalQuantity = 0;
-    security.trades.forEach((trade) => {
-        if ((trade._id).equals(data.tradeId)) {
-            sharesToBeUpdated = trade.quantity;
-            action = trade.action;
-            originalQuantity = trade.quantity;
-            return;
-        }
-    });
 
-    if (update === 0) {
-        // share were bought, and now deleted
-        if (action === 1)
-            currentNoOfShares -= sharesToBeUpdated;
+    var originalAction = security.trades[0].action;
+    var originalQuantity = security.trades[0].quantity;
 
-        else if (action === 0)
-            currentNoOfShares += sharesToBeUpdated;
-    }
+    // share were bought, and now deleted
+    if (originalAction === 1)
+        currentNoOfShares -= originalQuantity;
 
-    else {
+    else
+        currentNoOfShares += originalQuantity;
 
-        // original action was sell
-        if (action === 0) {
-            if (data.action === 0)
-                currentNoOfShares = currentNoOfShares + originalQuantity - data.quantity;
-
-            else
-                currentNoOfShares = currentNoOfShares + originalQuantity + data.quantity;
-        }
-
-        else {
-            if (data.action === 0)
-                currentNoOfShares = currentNoOfShares - data.quantity - originalQuantity;
-
-            else
-                currentNoOfShares = currentNoOfShares + data.quantity - originalQuantity;
-        }
-    }
-
-    if (sharesToBeUpdated === 0) {
+    if (originalQuantity === 0) {
         console.log(chalk.yellow("No trade was found"));
         return null;
     }
-    console.log(currentNoOfShares);
+    return currentNoOfShares;
+}
+
+var updateTrade = function (security, data, update = 1) {
+
+    var currentNoOfShares = security.noOfShares;
+    var originalAction = security.trades[0].action;
+    var originalQuantity = security.trades[0].quantity;
+
+    // original originalAction was sell
+    if (originalAction === 0) {
+        if (data.action === 0)
+            currentNoOfShares = currentNoOfShares + originalQuantity - data.quantity;
+
+        else
+            currentNoOfShares = currentNoOfShares + originalQuantity + data.quantity;
+    }
+
+    else {
+        if (data.action === 0)
+            currentNoOfShares = currentNoOfShares - data.quantity - originalQuantity;
+
+        else
+            currentNoOfShares = currentNoOfShares + data.quantity - originalQuantity;
+    }
+
+
+    if (originalQuantity === 0) {
+        console.log(chalk.yellow("No trade was found"));
+        return null;
+    }
     return currentNoOfShares;
 }
 
 module.exports = {
-    errorBody : errorBody,
+    errorBody: errorBody,
     validateUpdateNoOfShares: validateUpdateNoOfShares,
-    deleteOrUpdateTrade: deleteOrUpdateTrade,
+    updateTrade: updateTrade,
+    deleteTrade: deleteTrade,
 }

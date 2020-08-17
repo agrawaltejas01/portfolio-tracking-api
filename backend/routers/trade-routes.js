@@ -13,12 +13,9 @@ router.route("/addTrade").post(async (req, res) => {
 
         // Validate Request Body
         if (!requestBodyValidator.addTradeReqBody(req.body)) {
-            throw new utils.errorBody("Invalid Body recieved", 404);
+            throw new utils.errorBody("Invalid Body recieved", 400);
         }
 
-        if (!utils.validateTradeData(req.body)) {
-            throw new utils.errorBody("Error in data validation");
-        }
         const security = await database.getSecurityByID(req.body.ticker);
 
         // If security exists, get value of noOfShares
@@ -40,7 +37,7 @@ router.route("/addTrade").post(async (req, res) => {
         }
 
         // Do the update operation in database
-        database.updateSecurityTrades(req, res, updates);
+        database.upsertSecurityTrades(req, res, updates);
 
 
     }
@@ -60,12 +57,7 @@ router.route("/updateTrade").patch(async (req, res) => {
 
         // Validate Request Body
         if (!requestBodyValidator.updateTradeReqBody(req.body)) {
-            throw new utils.errorBody("Invalid Body recieved", 404);
-        }
-
-        if (!utils.validateTradeData(req.body)) {
-            throw new utils.errorBody("Error in data validation");
-
+            throw new utils.errorBody("Invalid Body recieved", 400);
         }
 
         const security = await database.getSecurityByID(req.body.ticker);

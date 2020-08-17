@@ -6,27 +6,6 @@ var errorBody = function (message, status = 400)
     this.status = status;
 }
 
-var validateTradeData = function (data) {
-
-    if (data.action < 0 || data.action > 1) {
-        console.log(chalk.red("Action of trade can only be 0 or 1"));
-        return false;
-    }
-
-    if (data.quantity <= 0) {
-        console.log(chalk.red("Quantity of trade should be greater than 0"));
-        return false;
-    }
-
-    // check price only if action is 1 => (buy)
-    if (data.price <= 0) {
-        console.log(chalk.red("Price of trade should be greater than 0"));
-        return false;
-    }
-
-    return true;
-}
-
 var validateUpdateNoOfShares = function (currentNoOfShares, data) {
 
     // If selling, update only noOfShares
@@ -117,7 +96,6 @@ var deleteOrUpdateTrade = function (security, data, update = 1) {
 
 module.exports = {
     errorBody : errorBody,
-    validateTradeData: validateTradeData,
     validateUpdateNoOfShares: validateUpdateNoOfShares,
     deleteOrUpdateTrade: deleteOrUpdateTrade,
 }

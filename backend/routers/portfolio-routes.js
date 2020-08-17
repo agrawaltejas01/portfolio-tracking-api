@@ -7,7 +7,7 @@ var utils = require("../utils/portfolio-utils");
 
 var errorBody = require("../utils/trades-utils").errorBody;
 
-router.route("/fetchPortFolios").get(async (req, res) => {
+router.route("/").get(async (req, res) => {
 
     try {
 
@@ -16,21 +16,31 @@ router.route("/fetchPortFolios").get(async (req, res) => {
 
         const securityAndtrades = await getAllSecurities();
 
-        console.log(securityAndtrades);
-        res.status(200).json(securityAndtrades);
+        console.log("Successful requeset from /portfolio/")
+        var securities = [];
+
+        securityAndtrades.forEach((security) => {
+            var currentSecurity = {
+                ticker : security._id,
+                trades : security.trades
+            };
+
+            securities.push(currentSecurity);
+        })
+        res.status(200).json(securities);
     }
     catch (error) {
-        console.log(chalk.red("Error in portfolio/fetchPortFolios : " + error.message));
+        console.log(chalk.red("Error in portfolio/ : " + error.message));
         res.status(error.status).send("Error : " + error.message);
     }
 });
 
-router.route("/fetchHoldings").get(async (req, res) => {
+router.route("/holdings").get(async (req, res) => {
 
     try {
 
         if (!validatePortFolioUrlBody(req.body))
-            throw new errorBody("/fetchHoldings Does not accept any parameters", 404);
+            throw new errorBody("/holdings does not accept any parameters", 404);
 
         const securityAndtrades = await getAllSecurities();
 
@@ -45,21 +55,21 @@ router.route("/fetchHoldings").get(async (req, res) => {
 
             securities.push(currentSecurity);
         })
-
+        console.log("Successful requeset from /portfolio/holdings")
         res.status(200).json(securities);
     }
     catch (error) {
-        console.log(chalk.red("Error in portfolio/fetchHoldings : " + error.message))
+        console.log(chalk.red("Error in portfolio/holdings : " + error.message))
         res.status(error.status).send("Error : " + error.message);
     }
 });
 
-router.route("/fetchReturns").get(async (req, res) => {
+router.route("/returns").get(async (req, res) => {
 
     try {
 
         if (!validatePortFolioUrlBody(req.body))
-            throw new errorBody("/fetchReturns Does not accept any parameters", 404);
+            throw new errorBody("/returns Does not accept any parameters", 404);
 
         const securityAndtrades = await getAllSecurities();
 
@@ -69,12 +79,13 @@ router.route("/fetchReturns").get(async (req, res) => {
             totalReturn += utils.calculateReturns(security);
         })
 
+        console.log("Successful requeset from /portfolio/returns")
         res.status(200).json({
             totalReturn: totalReturn
         });
     }
     catch (error) {
-        console.log(chalk.red("Error in portfolio/fetchReturns : " + error.message))
+        console.log(chalk.red("Error in portfolio/returns : " + error.message))
         res.status(error.status).send("Error : " + error.message);
     }
 });

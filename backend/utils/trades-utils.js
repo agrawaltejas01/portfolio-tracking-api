@@ -12,7 +12,7 @@ var addTrade = function (currentNoOfShares, data) {
 
         // Cannot sell more number of shares than we currently have 
         if (currentNoOfShares < data.quantity) {
-            return null
+            throw new errorBody("Cannot sell more shares than we own right now", 400);
         }
 
         else

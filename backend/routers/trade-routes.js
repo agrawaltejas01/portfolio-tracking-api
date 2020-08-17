@@ -6,7 +6,7 @@ var utils = require("../utils/trades-utils");
 var database = require('../utils/database-operations');
 
 
-router.route("/addTrade").post(async (req, res) => {
+router.route("/").post(async (req, res) => {
 
 
     try {
@@ -32,9 +32,6 @@ router.route("/addTrade").post(async (req, res) => {
         // Validate and update noOfShares
         updates = utils.addTrade(currentNoOfShares, req.body);
 
-        if (updates === null) {
-            throw new utils.errorBody("Cannot sell more shares than we own right now", 400);
-        }
 
         // Do the update operation in database
         database.upsertSecurityTrades(req, res, updates);
@@ -84,7 +81,7 @@ var getNewNumberOfShares = async (req, update = 1) => {
 }
 
 
-router.route("/updateTrade").patch(async (req, res) => {
+router.route("/").patch(async (req, res) => {
 
     try {
 
@@ -105,7 +102,7 @@ router.route("/updateTrade").patch(async (req, res) => {
 
 });
 
-router.route("/deleteTrade").delete(async (req, res) => {
+router.route("/").delete(async (req, res) => {
 
     try {
         // Delete Request Body

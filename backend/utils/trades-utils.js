@@ -1,6 +1,6 @@
 const chalk = require("chalk")
 
-var errorBody = function (message, status = 400) {
+var errorBody = function (message, status) {
     this.message = message;
     this.status = status;
 }

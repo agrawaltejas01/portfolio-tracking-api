@@ -33,7 +33,7 @@ router.route("/addTrade").post(async (req, res) => {
         updates = utils.addTrade(currentNoOfShares, req.body);
 
         if (updates === null) {
-            throw new utils.errorBody("Cannot sell more shares than we own right now");
+            throw new utils.errorBody("Cannot sell more shares than we own right now", 400);
         }
 
         // Do the update operation in database
@@ -110,7 +110,7 @@ router.route("/deleteTrade").delete(async (req, res) => {
     try {
         // Delete Request Body
         if (!requestBodyValidator.deleteTradeReqBody(req.body)) {
-            throw new utils.errorBody("Invalid Body recieved", 404);
+            throw new utils.errorBody("Invalid Body recieved", 400);
         }
 
         var newNoOfShares = await getNewNumberOfShares(req, 0);

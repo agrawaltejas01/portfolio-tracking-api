@@ -12,7 +12,7 @@ router.route("/").get(async (req, res) => {
     try {
 
         if (!validatePortFolioUrlBody(req.body))
-            throw new errorBody("/fetchPortFolios Does not accept any parameters", 404);
+            throw new errorBody("/fetchPortFolios Does not accept any parameters", 400);
 
         const securityAndtrades = await getAllSecurities();
 
@@ -40,7 +40,7 @@ router.route("/holdings").get(async (req, res) => {
     try {
 
         if (!validatePortFolioUrlBody(req.body))
-            throw new errorBody("/holdings does not accept any parameters", 404);
+            throw new errorBody("/holdings does not accept any parameters", 400);
 
         const securityAndtrades = await getAllSecurities();
 
@@ -69,7 +69,7 @@ router.route("/returns").get(async (req, res) => {
     try {
 
         if (!validatePortFolioUrlBody(req.body))
-            throw new errorBody("/returns Does not accept any parameters", 404);
+            throw new errorBody("/returns Does not accept any parameters", 400);
 
         const securityAndtrades = await getAllSecurities();
 

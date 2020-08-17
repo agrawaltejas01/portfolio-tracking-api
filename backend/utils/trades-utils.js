@@ -40,8 +40,6 @@ var addTrade = function (currentNoOfShares, data) {
     return updates;
 }
 
-// update = 1 => update
-// update = 0 => delete
 
 var deleteTrade = (security) => {
 

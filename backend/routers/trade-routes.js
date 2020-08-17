@@ -50,6 +50,39 @@ router.route("/addTrade").post(async (req, res) => {
 });
 
 
+var getNewNumberOfShares = async (req, update = 1) => {
+
+    const security = await database.getSecurityByTradeID(req.body.tradeId);
+
+    // ticker does not exist
+    if (security === null) {
+        throw new utils.errorBody("No share was found (Perhaps wrong tradeId)", 404);
+    }
+
+    // Get new value of noOfShares
+    if(update)
+        newNoOfShares = utils.updateTrade(security, req.body);
+    
+    else
+        newNoOfShares = utils.deleteTrade(security)
+
+    // Warn user about the action
+    if (newNoOfShares < 0)
+    {
+        console.log(newNoOfShares);
+        console.log(chalk.red.bold("Operation will make total number of shares less than 0. Cannot be permitted"));
+        throw new utils.errorBody("Operation will make total number of shares less than 0. Cannot be permitted", 400);
+    }
+
+    // No trade with given tradeID was found
+    if (newNoOfShares === null) {
+        throw new utils.errorBody("No share was found (Perhaps Wrong tradeId)", 404);
+    }
+
+    return newNoOfShares;
+
+}
+
 
 router.route("/updateTrade").patch(async (req, res) => {
 
@@ -60,24 +93,7 @@ router.route("/updateTrade").patch(async (req, res) => {
             throw new utils.errorBody("Invalid Body recieved", 400);
         }
 
-        const security = await database.getSecurityByTradeID(req.body.tradeId);
-
-        // ticker does not exist
-        if (security === null) {
-            throw new utils.errorBody("No share was found (Perhaps wrong tradeId)");
-        }
-
-        // Get new value of noOfShares
-        newNoOfShares = utils.updateTrade(security, req.body)
-
-        // Warn user about the action
-        if (newNoOfShares < 0)
-            console.log(chalk.yellow.bold("total number of shares after deleting this trade will be negative"));
-
-        // No trade with given tradeID was found
-        if (newNoOfShares === null) {
-            throw new utils.errorBody("No share was found (Perhaps Wrong tradeId)");
-        }
+        var newNoOfShares = await getNewNumberOfShares(req, 1);
 
         database.updateTrade(req, res, newNoOfShares);
 
@@ -97,24 +113,7 @@ router.route("/deleteTrade").delete(async (req, res) => {
             throw new utils.errorBody("Invalid Body recieved", 404);
         }
 
-        const security = await database.getSecurityByTradeID(req.body.tradeId);
-
-        // ticker does not exist
-        if (security === null) {
-            throw new utils.errorBody("No share was found (Perhaps wrong tradeId)");
-        }
-
-        // Get new value of noOfShares
-        newNoOfShares = utils.deleteTrade(security)
-
-        // Warn user about the action
-        if (newNoOfShares < 0)
-            console.log(chalk.yellow.bold("total number of shares after deleting this trade will be negative"));
-
-        // No trade with given tradeID was found
-        if (newNoOfShares === null) {
-            throw new utils.errorBody("No share was found (Perhaps Wrong tradeId)");
-        }
+        var newNoOfShares = await getNewNumberOfShares(req, 0);
 
         database.deleteTrade(req, res, newNoOfShares);
     }

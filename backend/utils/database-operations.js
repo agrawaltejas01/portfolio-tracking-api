@@ -11,7 +11,7 @@ var getAllSecurities = async () => {
         console.log(chalk.red("Error in getAllSecurities : " + error));
         res.status(400).send("Error in getAllSecurities : " + error);
     }
-}
+};
 
 var getSecurityByID = async (id) => {
 
@@ -24,7 +24,26 @@ var getSecurityByID = async (id) => {
         res.status(400).send("Error in getSecurityByID : " + error);
     }
 
+};
+
+var getSecurityByTradeID = async (tradeId) => {
+    
+    try {
+        var security = await trades.findOne(
+            {
+                "trades._id": new ObjectId(tradeId)
+            }
+        );
+
+        return security;
+    }
+    catch (error) {
+        console.log(chalk.red("Error in getSecurityByTradeID : " + error));
+        res.status(400).send("Error in getSecurityByTradeID : " + error);
+    }
+
 }
+
 
 var upsertSecurityTrades = async (req, res, updates) => {
 
@@ -66,7 +85,7 @@ var upsertSecurityTrades = async (req, res, updates) => {
         res.status(400).send("Error in calling in /addTrade : " + error);
     }
 
-}
+};
 
 var updateTrade = async (req, res, newNoOfShares) => {
 
@@ -89,7 +108,7 @@ var updateTrade = async (req, res, newNoOfShares) => {
         
         console.log(chalk.green("Successful request to update trades (patch /trades/)"));
         console.log(req.body);
-        res.send("Trade was successfully updated for ticker " + req.body.ticker);
+        res.send("Trade was successfully updated for ticker " + req.body.tradeId);
     }
     catch (error) {
         console.log(chalk.red("Error in updating trade(/updateTrade) : " + error));
@@ -120,7 +139,7 @@ var deleteTrade = async (req, res, newNoOfShares) => {
 
         console.log(chalk.green("Successful request to delete trade (delete /trades/)"));
         console.log(req.body);
-        res.send("Trade was successfully deleted for ticker " + req.body.ticker);
+        res.send("Trade was successfully deleted for ticker " + req.body.tradeId);
 
     }
     catch (error) {
@@ -131,8 +150,9 @@ var deleteTrade = async (req, res, newNoOfShares) => {
 
 module.exports = {
     getSecurityByID: getSecurityByID,
+    getSecurityByTradeID : getSecurityByTradeID,
     upsertSecurityTrades: upsertSecurityTrades,
     updateTrade: updateTrade,
     deleteTrade: deleteTrade,
     getAllSecurities : getAllSecurities,
-}
+};

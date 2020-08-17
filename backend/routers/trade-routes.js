@@ -60,11 +60,12 @@ router.route("/updateTrade").patch(async (req, res) => {
             throw new utils.errorBody("Invalid Body recieved", 400);
         }
 
-        const security = await database.getSecurityByID(req.body.ticker);
+        // const security = await database.getSecurityByID(req.body.ticker);
+        const security = await database.getSecurityByTradeID(req.body.tradeId);
 
         // ticker does not exist
         if (security === null) {
-            throw new utils.errorBody("No share was found (Perhaps wrong ticker)");
+            throw new utils.errorBody("No share was found (Perhaps wrong tradeId)");
         }
 
         // Get new value of noOfShares
@@ -97,11 +98,12 @@ router.route("/deleteTrade").delete(async (req, res) => {
             throw new utils.errorBody("Invalid Body recieved", 404);
         }
 
-        const security = await database.getSecurityByID(req.body.ticker);
+        // const security = await database.getSecurityByID(req.body.ticker);
+        const security = await database.getSecurityByTradeID(req.body.tradeId);
 
         // ticker does not exist
         if (security === null) {
-            throw new utils.errorBody("No share was found (Perhaps wrong ticker)");
+            throw new utils.errorBody("No share was found (Perhaps wrong tradeId)");
         }
 
         // Get new value of noOfShares

@@ -113,7 +113,7 @@ var addTradeReqBody = (data) => {
 
 var updateTradeReqBody = (data) => {
 
-    return bodyLength(data, 5) && validateTicker(data) && validateTradeId(data) &&
+    return bodyLength(data, 4) && validateTradeId(data) &&
         validateAction(data) && validatePrice(data) && validateQuantity(data);
 
 }
@@ -121,7 +121,7 @@ var updateTradeReqBody = (data) => {
 
 var deleteTradeReqBody = (data) => {
 
-    return bodyLength(data, 2) && validateTicker(data) && validateTradeId(data)
+    return bodyLength(data, 1) && validateTradeId(data)
 }
 
 

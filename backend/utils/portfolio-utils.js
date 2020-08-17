@@ -1,5 +1,7 @@
+const constants = require('./constants')
+
 var calculateReturns = function (data) {
-    var currentPrice = 100;
+    var currentPrice = constants.currentPrice;
     return (currentPrice - calculateAvgBuyPrice(data.trades)) * (data.noOfShares)
 };
 

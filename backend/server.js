@@ -4,6 +4,8 @@ const mongo = require("mongoose");
 const cors = require('cors');
 const chalk = require('chalk');
 
+const constants = require('./utils/constants')
+
 const tradeRouter = require('./routers/trade-routes');
 const portFolioRouter = require('./routers/portfolio-routes');
 
@@ -14,7 +16,7 @@ const port = process.env.PORT || 8000;
 // Otherwise we have to use JSON.parse() and all those things
 app.use(bodyParser.json());
 
-var db = mongo.connect('mongodb://127.0.0.1:27017/portfolio-tracker',
+var db = mongo.connect(constants.dataBaseUrl,
     {
         useNewUrlParser: true,
         useCreateIndex : true,

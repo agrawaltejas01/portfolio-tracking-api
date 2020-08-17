@@ -18,11 +18,11 @@ var getNoOfShares = async (ticker) => {
     try {
         var security = await trades.findOne(
             {
-                _id : ticker
+                _id: ticker
             },
 
             {
-                noOfShares: 1 
+                noOfShares: 1
             }
         );
         return security;
@@ -36,6 +36,7 @@ var getNoOfShares = async (ticker) => {
 
 var getSecurityByTradeID = async (tradeId) => {
 
+    console.log("Inside getSecurityByTradeID \n" + tradeId);
     try {
         var security = await trades.findOne(
             {
@@ -64,6 +65,8 @@ var getSecurityByTradeID = async (tradeId) => {
 
 var upsertSecurityTrades = async (req, res, updates) => {
 
+    var newId = new ObjectId();
+
     try {
         await trades.updateOne(
             {
@@ -74,7 +77,7 @@ var upsertSecurityTrades = async (req, res, updates) => {
                 $push: {
                     trades:
                     {
-                        _id: new ObjectId(),
+                        _id: newId,
                         timeStamp: new Date(),
                         action: req.body.action,
                         quantity: req.body.quantity,
@@ -94,8 +97,13 @@ var upsertSecurityTrades = async (req, res, updates) => {
 
         console.log(chalk.green("Successful request to add new trades (post /trades/)"));
         console.log(req.body);
-        res.send("New Trade was successfully added in security : " + req.body.ticker);
-
+        res.send({
+            ticker: req.body.ticker,
+            tradeId: newId,
+            action: req.body.action,
+            quantity: req.body.quantity,
+            price: req.body.price,
+        });
     }
     catch (error) {
         console.log(chalk.red("Error in adding trade(/addTrade) for Error : " + error));
@@ -104,12 +112,12 @@ var upsertSecurityTrades = async (req, res, updates) => {
 
 };
 
-var updateTrade = async (req, res, newNoOfShares) => {
+var updateTrade = async (req, res, updatedSecurity) => {
 
     try {
         await trades.updateOne(
             {
-                "trades._id": new ObjectId(req.body.tradeId)
+                "trades._id": new ObjectId(req.params.tradeId)
             },
 
             {
@@ -118,14 +126,21 @@ var updateTrade = async (req, res, newNoOfShares) => {
                 "trades.$.price": req.body.price,
 
                 $set: {
-                    noOfShares: newNoOfShares
+                    noOfShares: updatedSecurity.newNoOfShares
                 }
             },
         )
 
         console.log(chalk.green("Successful request to update trades (patch /trades/)"));
         console.log(req.body);
-        res.send("Trade was successfully updated for ticker " + req.body.tradeId);
+        res.send({
+            ticker : updatedSecurity.ticker,
+            tradeId: req.params.tradeId,
+            action: req.body.action,
+            quantity: req.body.quantity,
+            price: req.body.price,
+        })
+        // res.send("Trade was successfully updated for ticker " + req.params.tradeId);
     }
     catch (error) {
         console.log(chalk.red("Error in updating trade(/updateTrade) : " + error));
@@ -133,31 +148,33 @@ var updateTrade = async (req, res, newNoOfShares) => {
     }
 };
 
-var deleteTrade = async (req, res, newNoOfShares) => {
+var deleteTrade = async (req, res, updatedSecurity) => {
 
     try {
         await trades.updateOne(
             {
-                "trades._id": req.body.tradeId
+                "trades._id": req.params.tradeId
             },
 
             {
                 $pull: {
                     trades: {
-                        _id: new ObjectId(req.body.tradeId)
+                        _id: new ObjectId(req.params.tradeId)
                     }
                 },
 
                 $set: {
-                    noOfShares: newNoOfShares
+                    noOfShares: updatedSecurity.newNoOfShares
                 }
             }
         );
 
         console.log(chalk.green("Successful request to delete trade (delete /trades/)"));
         console.log(req.body);
-        res.send("Trade was successfully deleted for ticker " + req.body.tradeId);
-
+        res.send({
+            ticker : updatedSecurity.ticker,
+            tradeId: req.params.tradeId
+        })
     }
     catch (error) {
         console.log(chalk.red("Error in deleting trade(/deleteTrade) : " + error));

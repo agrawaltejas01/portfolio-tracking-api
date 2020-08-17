@@ -31,16 +31,17 @@ var validateTicker = (data) => {
     return true;
 }
 
-var validateTradeId = (data) => {
+var tradeIdUrl = (data) => {
     if (!data.hasOwnProperty('tradeId')) {
         console.log(chalk.red("No tradeId provided in request"));
         return false;
     }
 
-    if (typeof data.tradeId != "string") {
-        console.log(chalk.red("tradeId must be a string"));
+    if ( !Boolean(data.tradeId.match(/^[0-9a-f]{24}$/i)) ) {
+        console.log(chalk.red("tradeId must be a 24 character long hex(0-9a-f) string"));
         return false;
     }
+    
 
     return true;
 }
@@ -111,23 +112,22 @@ var addTradeReqBody = (data) => {
             && validatePrice(data) && validateQuantity(data);
 }
 
-var updateTradeReqBody = (data) => {
+var updateTradeReqBody = (req) => {
 
-    return bodyLength(data, 4) && validateTradeId(data) &&
-        validateAction(data) && validatePrice(data) && validateQuantity(data);
+    return bodyLength(req.body, 3) && tradeIdUrl(req.params) && 
+        validateAction(req.body) && validatePrice(req.body) && validateQuantity(req.body);
 
 }
 
-
-var deleteTradeReqBody = (data) => {
-
-    return bodyLength(data, 1) && validateTradeId(data)
+var deleteTradeReqBody = (req) => {
+    return bodyLength(req.body, 0) && tradeIdUrl(req.params);
 }
+
 
 
 module.exports = {
     validatePortFolioUrlBody: validatePortFolioUrlBody,
     addTradeReqBody: addTradeReqBody,
     updateTradeReqBody: updateTradeReqBody,
-    deleteTradeReqBody: deleteTradeReqBody,
+    deleteTradeReqBody : deleteTradeReqBody,
 }

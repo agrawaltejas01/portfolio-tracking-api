@@ -16,28 +16,24 @@ router.route("/addTrade").post(async (req, res) => {
             throw new utils.errorBody("Invalid Body recieved", 400);
         }
 
-        const security = await database.getSecurityByID(req.body.ticker);
+        const security = await database.getNoOfShares(req.body.ticker);
 
-        console.log("Security recieved from getSecurityByID");
-        console.log(security);
         // If security exists, get value of noOfShares
         if (security) {
             var currentNoOfShares = security.noOfShares;
         }
-        
+
         // Else we will have to create new security
         // Initialize value of currentNoOfShares to 0
         else {
             var currentNoOfShares = 0;
         }
 
-        console.log("noOfShares recieved from getSecurityByID");
-        console.log(currentNoOfShares);
         // Validate and update noOfShares
-        updates = utils.validateUpdateNoOfShares(currentNoOfShares, req.body);
+        updates = utils.addTrade(currentNoOfShares, req.body);
 
         if (updates === null) {
-            throw "Cannot sell more shares than we own right now"
+            throw new utils.errorBody("Cannot sell more shares than we own right now");
         }
 
         // Do the update operation in database
@@ -64,7 +60,6 @@ router.route("/updateTrade").patch(async (req, res) => {
             throw new utils.errorBody("Invalid Body recieved", 400);
         }
 
-        // const security = await database.getSecurityByID(req.body.ticker);
         const security = await database.getSecurityByTradeID(req.body.tradeId);
 
         // ticker does not exist
@@ -102,7 +97,6 @@ router.route("/deleteTrade").delete(async (req, res) => {
             throw new utils.errorBody("Invalid Body recieved", 404);
         }
 
-        // const security = await database.getSecurityByID(req.body.ticker);
         const security = await database.getSecurityByTradeID(req.body.tradeId);
 
         // ticker does not exist

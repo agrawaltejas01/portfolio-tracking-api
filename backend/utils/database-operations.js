@@ -13,15 +13,23 @@ var getAllSecurities = async () => {
     }
 };
 
-var getSecurityByID = async (id) => {
+var getNoOfShares = async (ticker) => {
 
     try {
-        var security = await trades.findById(id);
+        var security = await trades.findOne(
+            {
+                _id : ticker
+            },
+
+            {
+                noOfShares: 1 
+            }
+        );
         return security;
     }
     catch (error) {
-        console.log(chalk.red("Error in getSecurityByID : " + error));
-        res.status(400).send("Error in getSecurityByID : " + error);
+        console.log(chalk.red("Error in getNoOfShares : " + error));
+        res.status(400).send("Error in getNoOfShares : " + error);
     }
 
 };
@@ -158,7 +166,7 @@ var deleteTrade = async (req, res, newNoOfShares) => {
 };
 
 module.exports = {
-    getSecurityByID: getSecurityByID,
+    getNoOfShares: getNoOfShares,
     getSecurityByTradeID: getSecurityByTradeID,
     upsertSecurityTrades: upsertSecurityTrades,
     updateTrade: updateTrade,

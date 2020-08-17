@@ -5,7 +5,7 @@ var errorBody = function (message, status = 400) {
     this.status = status;
 }
 
-var validateUpdateNoOfShares = function (currentNoOfShares, data) {
+var addTrade = function (currentNoOfShares, data) {
 
     // If selling, update only noOfShares
     if (data.action === 0) {
@@ -97,7 +97,7 @@ var updateTrade = function (security, data, update = 1) {
 
 module.exports = {
     errorBody: errorBody,
-    validateUpdateNoOfShares: validateUpdateNoOfShares,
+    addTrade: addTrade,
     updateTrade: updateTrade,
     deleteTrade: deleteTrade,
 }

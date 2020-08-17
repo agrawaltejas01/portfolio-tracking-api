@@ -170,7 +170,6 @@ var deleteTrade = async (req, res, updatedSecurity) => {
         );
 
         console.log(chalk.green("Successful request to delete trade (delete /trades/)"));
-        console.log(req.body);
         res.send({
             ticker : updatedSecurity.ticker,
             tradeId: req.params.tradeId

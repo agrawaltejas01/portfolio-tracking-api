@@ -54,7 +54,7 @@ var getNewNumberOfShares = async (req, update = 1) => {
 
     // ticker does not exist
     if (security === null) {
-        throw new utils.errorBody("No share was found (Perhaps wrong tradeId)", 404);
+        throw new utils.errorBody("No trade was found (Perhaps wrong tradeId)", 404);
     }
 
     console.log(security);
@@ -74,11 +74,11 @@ var getNewNumberOfShares = async (req, update = 1) => {
 
     // No trade with given tradeID was found
     if (newNoOfShares === null) {
-        throw new utils.errorBody("No share was found (Perhaps Wrong tradeId)", 404);
+        throw new utils.errorBody("No trade was found (Perhaps Wrong tradeId)", 404);
     }
 
     return security = {
-        ticker : security.ticker,
+        ticker : security._id,
         newNoOfShares : newNoOfShares
     };
 

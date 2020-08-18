@@ -103,7 +103,7 @@ const updateTradePath = {
 
     responses: {
         '200': {
-            description: "Trade deleted successfully",
+            description: "Trade updated successfully",
             schema: {
                 $ref: '#/definitions/addTradeOutPut'
             }

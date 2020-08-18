@@ -1,17 +1,27 @@
 const chalk = require('chalk');
+const errorBody = require('./trades-utils').errorBody;
 
 var validatePortFolioUrlBody = (data) => {
-    if (Object.keys(data).length > 0)
-        return false;
+    if (Object.keys(data).length > 0){
+        console.log(chalk.red("No Parameters are expected"));
+        throw new errorBody("No Parameters are expected", 400);
+    }
 
     return true;
+}
+
+var emptyBody = (data) => {
+    if(data != null){
+        console.log(chalk.red("No Body is expected"));
+        throw new errorBody("No Body is expected", 400);
+    }
 }
 
 var bodyLength = (data, len) => {
     if (Object.keys(data).length != len) {
         console.log(chalk.red("Invalid number of parameter recieved"));
         console.log(chalk.red("Expected number of parameters : " + len + " recieved : " + Object.keys(data).length));
-        return false;
+        throw new errorBody("Expected number of parameters : " + len + " recieved : " + Object.keys(data).length, 400);
     }
 
     return true;
@@ -20,12 +30,12 @@ var bodyLength = (data, len) => {
 var validateTicker = (data) => {
     if (!data.hasOwnProperty('ticker')) {
         console.log(chalk.red("No ticker provided in request"));
-        return false;
+        throw new errorBody("No ticker provided in request", 400);
     }
 
     if (typeof data.ticker != "string") {
         console.log(chalk.red("ticker must be a string"));
-        return false;
+        throw new errorBody("ticker must be a string", 400);
     }
 
     return true;
@@ -34,14 +44,14 @@ var validateTicker = (data) => {
 var tradeIdUrl = (data) => {
     if (!data.hasOwnProperty('tradeId')) {
         console.log(chalk.red("No tradeId provided in request"));
-        return false;
+        throw new errorBody("No tradeId provided in request", 400);
     }
 
-    if ( !Boolean(data.tradeId.match(/^[0-9a-f]{24}$/i)) ) {
+    if (!Boolean(data.tradeId.match(/^[0-9a-f]{24}$/i))) {
         console.log(chalk.red("tradeId must be a 24 character long hex(0-9a-f) string"));
-        return false;
+        throw new errorBody("tradeId must be a 24 character long hex(0-9a-f) string", 400);
     }
-    
+
 
     return true;
 }
@@ -49,19 +59,18 @@ var tradeIdUrl = (data) => {
 var validateAction = (data) => {
     if (!data.hasOwnProperty('action')) {
         console.log(chalk.red("No action provided in request"));
-        return false;
+        throw new errorBody("No action provided in request", 400);
     }
 
     if (typeof data.action != "number") {
         console.log(chalk.red("action must be a number"));
-        return false;
+        throw new errorBody("action must be a number", 400);
     }
 
     if (data.action != 0 && data.action != 1) {
         console.log(chalk.red("action must be either 0(sell) or 1(buy)"));
-        return false;
+        throw new errorBody("action must be either 0(sell) or 1(buy)", 400);
     }
-
 
     return true;
 }
@@ -69,17 +78,17 @@ var validateAction = (data) => {
 var validateQuantity = (data) => {
     if (!data.hasOwnProperty('quantity')) {
         console.log(chalk.red("No quantity provided in request"));
-        return false;
+        throw new errorBody("No quantity provided in request", 400);
     }
 
     if (!Number.isInteger(data.quantity)) {
         console.log(chalk.red("quantity must be a integer number"));
-        return false;
+        throw new errorBody("quantity must be a integer number", 400);
     }
 
     if (data.quantity <= 0) {
         console.log(chalk.red("quantity must be greater than 0 "));
-        return false;
+        throw new errorBody("quantity must be greater than 0 ", 400);
     }
 
 
@@ -88,18 +97,18 @@ var validateQuantity = (data) => {
 
 var validatePrice = (data) => {
     if (!data.hasOwnProperty('price')) {
-        console.log(chalk.red("No quantity provided in request"));
-        return false;
+        console.log(chalk.red("No price provided in request"));
+        throw new errorBody("No price provided in request", 400);
     }
 
     if (typeof data.price != "number") {
         console.log(chalk.red("price must be a number"));
-        return false;
+        throw new errorBody("price must be a number", 400);
     }
 
     if (data.price <= 0) {
         console.log(chalk.red("price must be greater than 0 "));
-        return false;
+        throw new errorBody("price must be greater than 0 ", 400);
     }
 
 
@@ -108,13 +117,13 @@ var validatePrice = (data) => {
 
 var addTradeReqBody = (data) => {
 
-    return bodyLength(data, 4) && validateTicker(data) && validateAction(data) 
-            && validatePrice(data) && validateQuantity(data);
+    return bodyLength(data, 4) && validateTicker(data) && validateAction(data)
+        && validatePrice(data) && validateQuantity(data);
 }
 
 var updateTradeReqBody = (req) => {
 
-    return bodyLength(req.body, 3) && tradeIdUrl(req.params) && 
+    return bodyLength(req.body, 3) && tradeIdUrl(req.params) &&
         validateAction(req.body) && validatePrice(req.body) && validateQuantity(req.body);
 
 }
@@ -129,5 +138,5 @@ module.exports = {
     validatePortFolioUrlBody: validatePortFolioUrlBody,
     addTradeReqBody: addTradeReqBody,
     updateTradeReqBody: updateTradeReqBody,
-    deleteTradeReqBody : deleteTradeReqBody,
+    deleteTradeReqBody: deleteTradeReqBody,
 }

@@ -13,7 +13,7 @@ const status400 = {
 const fetchPortfolioPath = {
     get: {
         tags: tags,
-        description: "Return list of all trades for all securities",
+        description: "Return list of all securities along with all corresponing trades.",
 
         produces: produces,
 
@@ -33,7 +33,8 @@ const fetchPortfolioPath = {
 const fetchHoldingPath = {
     get: {
         tags: tags,
-        description: "Holding is weighted average of all the shares bought (In the order of purchase). \
+        description: "Holding consists of average buy price and number of shares is, \
+                       Average Nuy Price is weighted average of all the shares bought (In the order of purchase). \
                         Selling a share does not affect average buy price, only total number of shares",
 
         produces: produces,

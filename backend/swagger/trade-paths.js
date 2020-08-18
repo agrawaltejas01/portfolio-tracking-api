@@ -17,9 +17,11 @@ const status404 = {
 const addTradePath = {
     post: {
         tags: tags,
-        description: "Add new trade",
+        description: "Place a trade. A trade will be placed when user buys or sells share ,\
+                      affecting total number of shares. A user cannot sell more shares than he owns",
         requestBody: {
-            description: "Add a trade for a security",
+            description: "ticker of security, action (0 for buying, 1 for selling), quantity (whole number)\
+                          ,price(greater than 0)",
             required: true,
             content: {
                 "application/json": {
@@ -28,13 +30,12 @@ const addTradePath = {
                     }
                 }
             }
-
         },
         produces: produces,
 
         responses: {
             '200': {
-                description: "New Trade Added",
+                description: "New Trade Placed",
                 schema: {
                     $ref: '#/definitions/addTradeOutPut'
                 }
@@ -46,7 +47,8 @@ const addTradePath = {
 
 const deleteTradePath = {
     tags: tags,
-    description: "Delete a trade",
+    description: "Delete a trade. Total number of shares will be updated accordingly. \
+                  Operation will not be permitted if resulting number of total shares become less than 0 ",
 
     parameters: [
         {
@@ -74,7 +76,9 @@ const deleteTradePath = {
 
 const updateTradePath = {
     tags: tags,
-    description: "Delete a trade",
+    description: "Upsate a trade. User can update action(buying or selling), quantity of shares, price of shares.\
+                All the validations of placing the trade apply. Operation will not be permitted if resulting number\
+                 of total shares become less than 0 ",
 
     parameters: [
         {
@@ -87,7 +91,8 @@ const updateTradePath = {
     ],
 
     requestBody: {
-        description: "Add a trade for a security",
+        description: "action (0 for buying, 1 for selling), quantity (whole number)\
+                        ,price(greater than 0)",
         required: true,
         content: {
             "application/json": {
@@ -96,7 +101,6 @@ const updateTradePath = {
                 }
             }
         }
-
     },
 
     produces: produces,

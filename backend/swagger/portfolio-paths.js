@@ -13,7 +13,7 @@ const status400 = {
 const fetchPortfolioPath = {
     get: {
         tags: tags,
-        description: "Fetch portfolio",
+        description: "Return list of all trades for all securities",
 
         produces: produces,
 
@@ -33,7 +33,8 @@ const fetchPortfolioPath = {
 const fetchHoldingPath = {
     get: {
         tags: tags,
-        description: "Fetch holdings",
+        description: "Holding is weighted average of all the shares bought (In the order of purchase). \
+                        Selling a share does not affect average buy price, only total number of shares",
 
         produces: produces,
 
@@ -53,7 +54,8 @@ const fetchHoldingPath = {
 const fetchReturnsPath = {
     get: {
         tags: tags,
-        description: "Fetch portfolio",
+        description: "Returns are calculated as : SUM((CURRENT_PRICE[ticker] - AVERAGE_BUY_PRICE[ticker]) *\
+                        CURRENT_QUANTITY[ticker]). CURRENT_PRICE is assumed to be 100",
 
         produces: produces,
 

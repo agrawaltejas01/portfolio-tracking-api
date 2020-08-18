@@ -140,11 +140,10 @@ var updateTrade = async (req, res, updatedSecurity) => {
             quantity: req.body.quantity,
             price: req.body.price,
         })
-        // res.send("Trade was successfully updated for ticker " + req.params.tradeId);
     }
     catch (error) {
         console.log(chalk.red("Error in updating trade(/updateTrade) : " + error));
-        res.status(400).send("Error in calling in /updateTrade : " + error);
+        res.status(400).send("Error in calling /updateTrade : " + error);
     }
 };
 

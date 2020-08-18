@@ -5,7 +5,6 @@ var requestBodyValidator = require("../utils/request-body-validations");
 var utils = require("../utils/trades-utils");
 var database = require('../utils/database-operations');
 
-
 router.route("/").post(async (req, res) => {
 
 

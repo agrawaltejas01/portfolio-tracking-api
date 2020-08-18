@@ -3,6 +3,9 @@ const bodyParser = require('body-parser');
 const mongo = require("mongoose");
 const cors = require('cors');
 const chalk = require('chalk');
+const swaggerUi = require('swagger-ui-express');
+
+const swaggerDocument = require('./swagger/swagger')
 
 const constants = require('./utils/constants')
 
@@ -52,6 +55,8 @@ app.use(function (req, res, next) {
     // Pass to next layer of middleware
     next();
 });
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use('/trade', tradeRouter);
 app.use('/portfolio', portFolioRouter);

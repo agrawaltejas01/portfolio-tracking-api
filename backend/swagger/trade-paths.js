@@ -17,7 +17,7 @@ const status404 = {
 const addTradePath = {
     post: {
         tags: tags,
-        description: "Using this API will be place a trade(Buying or selling shares) ,\
+        description: "Using this API will place a trade(Buying or selling shares) ,\
                       affecting total number of shares. A user cannot sell more shares than he owns",
         requestBody: {
             description: "ticker of security, action (0 for buying, 1 for selling), quantity (integer greater than 0)\
@@ -91,8 +91,8 @@ const updateTradePath = {
     ],
 
     requestBody: {
-        description: "action (0 for buying, 1 for selling), quantity (whole number)\
-                        ,price(greater than 0)",
+        description: "action (0 for buying, 1 for selling), quantity (integer greater than 0)\
+        ,price(greater than 0)",
         required: true,
         content: {
             "application/json": {

@@ -33,8 +33,8 @@ const fetchPortfolioPath = {
 const fetchHoldingPath = {
     get: {
         tags: tags,
-        description: "Holding consists of average buy price and number of shares is, \
-                       Average Nuy Price is weighted average of all the shares bought (In the order of purchase). \
+        description: "Holding consists of average buy price and number of shares. \
+                       Average Buy Price is weighted average of all the shares bought (In the order of purchase). \
                         Selling a share does not affect average buy price, only total number of shares",
 
         produces: produces,

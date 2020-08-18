@@ -1,7 +1,0 @@
-1. Buy price and avg buy price will always be grater than 0.
-2. Quantitiy of stalks will always be greater than 0
-3. action on trade can only be buy/sell
-4. Cannot sell before we buy
-5. Cannot sell more number of shares than we currently have 
-6. When a trade is updated, or deleted, noOfShares should be updated.
-7. Validating request body arguments of all APIs.

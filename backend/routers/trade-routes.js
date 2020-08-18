@@ -15,6 +15,7 @@ router.route("/").post(async (req, res) => {
             throw new utils.errorBody("Invalid Body recieved", 400);
         }
 
+        // Get current noOfShares
         const security = await database.getNoOfShares(req.body.ticker);
 
         // If security exists, get value of noOfShares
@@ -48,7 +49,6 @@ router.route("/").post(async (req, res) => {
 
 var getNewNumberOfShares = async (req, update = 1) => {
 
-    console.log(req.params.tradeId);
     var security = await database.getSecurityByTradeID(req.params.tradeId.toString());
 
     // ticker does not exist
@@ -56,7 +56,6 @@ var getNewNumberOfShares = async (req, update = 1) => {
         throw new utils.errorBody("No trade was found (Perhaps wrong tradeId)", 404);
     }
 
-    console.log(security);
     // Get new value of noOfShares
     if (update)
         newNoOfShares = utils.updateTrade(security, req.body);
@@ -64,7 +63,7 @@ var getNewNumberOfShares = async (req, update = 1) => {
     else
         newNoOfShares = utils.deleteTrade(security)
 
-    // Warn user about the action
+    // Do not allow user to do the action, if resulting noOfShares are less than 0
     if (newNoOfShares < 0) {
         console.log(newNoOfShares);
         console.log(chalk.red.bold("Operation will make total number of shares less than 0. Cannot be permitted"));
@@ -76,9 +75,10 @@ var getNewNumberOfShares = async (req, update = 1) => {
         throw new utils.errorBody("No trade was found (Perhaps Wrong tradeId)", 404);
     }
 
+    // security object is sent for sending to response
     return security = {
-        ticker : security._id,
-        newNoOfShares : newNoOfShares
+        ticker: security._id,
+        newNoOfShares: newNoOfShares
     };
 
 }
@@ -93,8 +93,10 @@ router.route("/:tradeId").patch(async (req, res) => {
             throw new utils.errorBody("Invalid Body recieved", 400);
         }
 
+        // Get new noOfShares
         var updatedSecurity = await getNewNumberOfShares(req, 1);
 
+        // Perform update operation on database
         database.updateTrade(req, res, updatedSecurity);
 
     }
@@ -109,12 +111,15 @@ router.route("/:tradeId").delete(async (req, res) => {
 
     try {
 
+        // Validate Request Body
         if (!requestBodyValidator.deleteTradeReqBody(req)) {
             throw new utils.errorBody("Invalid Body recieved", 400);
         }
 
+        // Get new noOfShares
         var updatedSecurity = await getNewNumberOfShares(req, 0);
 
+        // Perform update operation on database
         database.deleteTrade(req, res, updatedSecurity);
     }
     catch (error) {

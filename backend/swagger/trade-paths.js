@@ -114,7 +114,7 @@ const updateTradePath = {
 };
 
 module.exports = {
-    addTradePath : addTradePath,
-    deleteTradePath : deleteTradePath,
-    updateTradePath : updateTradePath
+    addTradePath: addTradePath,
+    deleteTradePath: deleteTradePath,
+    updateTradePath: updateTradePath
 }

@@ -15,14 +15,12 @@ const portFolioRouter = require('./routers/portfolio-routes');
 const app = express();
 const port = process.env.PORT || 8000;
 
-// used so that we can directly use req.body
-// Otherwise we have to use JSON.parse() and all those things
 app.use(bodyParser.json());
 
 var db = mongo.connect(constants.dataBaseUrl,
     {
         useNewUrlParser: true,
-        useCreateIndex : true,
+        useCreateIndex: true,
 
     },
     function (error, response) {

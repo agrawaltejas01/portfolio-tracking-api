@@ -1,20 +1,14 @@
 const chalk = require('chalk');
 const errorBody = require('./trades-utils').errorBody;
 
+// Body should be empty in portfolio APIs
 var validatePortFolioUrlBody = (data) => {
-    if (Object.keys(data).length > 0){
+    if (Object.keys(data).length > 0) {
         console.log(chalk.red("No Parameters are expected"));
         throw new errorBody("No Parameters are expected", 400);
     }
 
     return true;
-}
-
-var emptyBody = (data) => {
-    if(data != null){
-        console.log(chalk.red("No Body is expected"));
-        throw new errorBody("No Body is expected", 400);
-    }
 }
 
 var bodyLength = (data, len) => {
@@ -41,6 +35,7 @@ var validateTicker = (data) => {
     return true;
 }
 
+// Ticker is objectId. Hence should be a 24 char long string representing hexaDecimal value
 var tradeIdUrl = (data) => {
     if (!data.hasOwnProperty('tradeId')) {
         console.log(chalk.red("No tradeId provided in request"));

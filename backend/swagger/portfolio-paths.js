@@ -71,7 +71,7 @@ const fetchReturnsPath = {
 };
 
 module.exports = {
-    fetchPortfolioPath : fetchPortfolioPath,
-    fetchHoldingPath : fetchHoldingPath,
-    fetchReturnsPath : fetchReturnsPath
+    fetchPortfolioPath: fetchPortfolioPath,
+    fetchHoldingPath: fetchHoldingPath,
+    fetchReturnsPath: fetchReturnsPath
 }

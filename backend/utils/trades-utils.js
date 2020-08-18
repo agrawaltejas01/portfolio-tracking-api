@@ -7,7 +7,7 @@ var errorBody = function (message, status) {
 
 var addTrade = function (currentNoOfShares, data) {
 
-    // If selling, update only noOfShares
+    // If selling
     if (data.action === 0) {
 
         // Cannot sell more number of shares than we currently have 
@@ -19,18 +19,9 @@ var addTrade = function (currentNoOfShares, data) {
             currentNoOfShares = currentNoOfShares - data.quantity;
     }
 
+    // If buying
     else {
-
-        // If we dont have any no of shares right now
-        // set them directly
-        if (currentNoOfShares === 0) {
-            currentNoOfShares = data.quantity;
-        }
-
-        // Else we should calculate weighted average for AvgBuyPrice.
-        else {
-            currentNoOfShares = currentNoOfShares + data.quantity;
-        }
+        currentNoOfShares += data.quantity;
     }
 
     var updates = {
@@ -52,6 +43,7 @@ var deleteTrade = (security) => {
     if (originalAction === 1)
         currentNoOfShares -= originalQuantity;
 
+    // shares were sold and now deleted.
     else
         currentNoOfShares += originalQuantity;
 
@@ -70,17 +62,22 @@ var updateTrade = function (security, data, update = 1) {
 
     // original originalAction was sell
     if (originalAction === 0) {
+
+        // 00 
         if (data.action === 0)
             currentNoOfShares = currentNoOfShares + originalQuantity - data.quantity;
 
+        // 01
         else
             currentNoOfShares = currentNoOfShares + originalQuantity + data.quantity;
     }
 
     else {
+        // 10
         if (data.action === 0)
             currentNoOfShares = currentNoOfShares - data.quantity - originalQuantity;
 
+        // 11
         else
             currentNoOfShares = currentNoOfShares + data.quantity - originalQuantity;
     }

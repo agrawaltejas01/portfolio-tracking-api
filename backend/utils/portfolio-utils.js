@@ -21,7 +21,7 @@ var calculateAvgBuyPrice = function (data) {
         else
             currShares -= trade.quantity;
     });
-    
+
     return currAvgBuyPrice;
 
 };

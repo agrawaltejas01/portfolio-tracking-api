@@ -11,18 +11,21 @@ router.route("/").get(async (req, res) => {
 
     try {
 
+        // Validate request body
         if (!validatePortFolioUrlBody(req.body))
             throw new errorBody("/fetchPortFolios Does not accept any parameters", 400);
 
+        // Read operation on database
         const securityAndtrades = await getAllSecurities();
 
         console.log("Successful requeset from /portfolio/")
         var securities = [];
 
+        // Prepare response object body
         securityAndtrades.forEach((security) => {
             var currentSecurity = {
-                ticker : security._id,
-                trades : security.trades
+                ticker: security._id,
+                trades: security.trades
             };
 
             securities.push(currentSecurity);
@@ -38,13 +41,16 @@ router.route("/").get(async (req, res) => {
 router.route("/holdings").get(async (req, res) => {
 
     try {
-
+        // Validate request body
         if (!validatePortFolioUrlBody(req.body))
             throw new errorBody("/holdings does not accept any parameters", 400);
 
+        // Read operation on database
         const securityAndtrades = await getAllSecurities();
 
         var securities = [];
+
+        // Prepare response object body
         securityAndtrades.forEach((security) => {
 
             var currentSecurity = {
@@ -68,9 +74,11 @@ router.route("/returns").get(async (req, res) => {
 
     try {
 
+        // Validate request body
         if (!validatePortFolioUrlBody(req.body))
             throw new errorBody("/returns Does not accept any parameters", 400);
 
+        // Read operation on database
         const securityAndtrades = await getAllSecurities();
 
         var totalReturn = 0;
@@ -79,7 +87,9 @@ router.route("/returns").get(async (req, res) => {
             totalReturn += utils.calculateReturns(security);
         })
 
-        console.log("Successful requeset from /portfolio/returns")
+        console.log("Successful requeset from /portfolio/returns");
+
+        // Prepare response object body
         res.status(200).json({
             totalReturn: totalReturn
         });

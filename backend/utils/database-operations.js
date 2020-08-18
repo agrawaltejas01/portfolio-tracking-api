@@ -13,6 +13,7 @@ var getAllSecurities = async () => {
     }
 };
 
+// Get current noOfShares with ticker
 var getNoOfShares = async (ticker) => {
 
     try {
@@ -34,6 +35,7 @@ var getNoOfShares = async (ticker) => {
 
 };
 
+// Get requested trade and currnet noOfShares
 var getSecurityByTradeID = async (tradeId) => {
 
     console.log("Inside getSecurityByTradeID \n" + tradeId);
@@ -44,6 +46,7 @@ var getSecurityByTradeID = async (tradeId) => {
             },
 
             {
+                // Project only that trade, which matches the tradeId
                 trades: {
                     $elemMatch: {
                         _id: new ObjectId(tradeId)
@@ -62,7 +65,8 @@ var getSecurityByTradeID = async (tradeId) => {
 
 }
 
-
+// Create new Security if ticker does not exist
+// Or push new trade
 var upsertSecurityTrades = async (req, res, updates) => {
 
     var newId = new ObjectId();
@@ -112,6 +116,7 @@ var upsertSecurityTrades = async (req, res, updates) => {
 
 };
 
+// Update requested trade
 var updateTrade = async (req, res, updatedSecurity) => {
 
     try {
@@ -134,7 +139,7 @@ var updateTrade = async (req, res, updatedSecurity) => {
         console.log(chalk.green("Successful request to update trades (patch /trades/)"));
         console.log(req.body);
         res.send({
-            ticker : updatedSecurity.ticker,
+            ticker: updatedSecurity.ticker,
             tradeId: req.params.tradeId,
             action: req.body.action,
             quantity: req.body.quantity,
@@ -147,6 +152,7 @@ var updateTrade = async (req, res, updatedSecurity) => {
     }
 };
 
+// Delete requested trade
 var deleteTrade = async (req, res, updatedSecurity) => {
 
     try {
@@ -170,7 +176,7 @@ var deleteTrade = async (req, res, updatedSecurity) => {
 
         console.log(chalk.green("Successful request to delete trade (delete /trades/)"));
         res.send({
-            ticker : updatedSecurity.ticker,
+            ticker: updatedSecurity.ticker,
             tradeId: req.params.tradeId
         })
     }

@@ -8,7 +8,7 @@ const tradeSchema = new Schema(
         _id: { type: String, required: true },
         avgBuyPrice: {
             type: Number,
-            default : 0,
+            default: 0,
         },
 
         noOfShares: {
@@ -39,7 +39,7 @@ const tradeSchema = new Schema(
                         throw new Error("quantity of trade cannot be less than or equal to 0");
                 }
             },
-            
+
             price: {
                 type: Number,
                 required: true,
@@ -49,9 +49,9 @@ const tradeSchema = new Schema(
                 }
             },
 
-            timeStamp : {
-                type : Date,
-                default : new Date(),
+            timeStamp: {
+                type: Date,
+                default: new Date(),
             }
         }]
     },

@@ -5,4 +5,4 @@ sudo kill -9 $(sudo lsof -t -i:8000)
 sudo systemctl restart mongod
 
 #run node script
-node ~/portfolio-tracking-api/backend/server.js
+/usr/local/bin/node ~/portfolio-tracking-api/backend/server.js
